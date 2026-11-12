@@ -625,7 +625,8 @@ class KdbxHeader {
   }
 
   _readBinary(List<int> bytes) {
-    final isProtected = bytes.first.isEven;
+    // KDBX 4 inner header: bit 0x01 of the flag byte marks a protected binary.
+    final isProtected = (bytes.first & 0x01) == 0x01;
     final data = bytes.slice(1); // Actual data comes after the flag byte
 
     final binary = isProtected

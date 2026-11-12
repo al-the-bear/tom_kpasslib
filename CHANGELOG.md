@@ -1,5 +1,11 @@
 # KPassLib changelog
 
+## 1.1.2+tom.2
+
+- A KDBX 4 binary's protected flag reads correctly: the inner header marks a
+  protected binary with bit 0x01, which was read inverted, so every binary
+  came back with the other kind and each save flipped it again.
+
 ## 1.1.2+tom.1
 
 Fork of kpasslib 1.1.2 (al-the-bear/tom_kpasslib, branch `tom/1.1.2-patches`),

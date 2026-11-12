@@ -2,7 +2,7 @@ name: tom_kpasslib
 description: >-
   Read, modify and write KeePass v2 databases (KDBX 3 and 4) in Dart, on the
   VM and on the web. The Tom Framework's fork of kpasslib (MIT).
-version: 1.1.2+tom.1
+version: 1.1.2+tom.2
 repository: https://github.com/al-the-bear/tom_kpasslib
 issue_tracker: https://github.com/al-the-bear/tom_kpasslib/issues
 
