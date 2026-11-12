@@ -14,8 +14,9 @@
 >   memory, iterations, parallelism, version) and `aesKdfRounds` /
 >   `setAesKdf`, for a new or an existing database.
 >
-> It also accepts `xml` 7 and reads a KDBX 4 binary's protected flag the
-> right way round (it was inverted). The rest of the API is upstream's; import
+> It also accepts `xml` 7, reads a KDBX 4 binary's protected flag the right
+> way round (it was inverted), and keeps a KDBX 3 file's protected values when
+> it has a protected binary (they were garbled). The rest of the API is upstream's; import
 > `package:tom_kpasslib/tom_kpasslib.dart` (`package:tom_kpasslib/kpasslib.dart`
 > is the same library under upstream's name). Below, upstream's README with the
 > KDF section added.

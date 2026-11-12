@@ -576,6 +576,15 @@ class KdbxDatabase {
   }
 
   XmlDocument _buildXml({required bool exportXml, required bool binaryTime}) {
+    // Built in document order: protected values (and in KDBX 3 the protected
+    // binaries in Meta) take their bytes of the inner random stream as they
+    // are built, and a reader takes them in the order the document has them.
+    final metaNode = meta.toXml(
+      header: header,
+      exportXml: exportXml,
+      binaryTime: binaryTime,
+    );
+
     final deletedObjectsNode = XmlElement(
       xmlName(XmlElem.deletedObjects),
       [],
@@ -607,11 +616,7 @@ class KdbxDatabase {
     return XmlUtils.create(XmlElem.docNode)
       ..rootElement.children.addAll(
         [
-          meta.toXml(
-            header: header,
-            exportXml: exportXml,
-            binaryTime: binaryTime,
-          ),
+          metaNode,
           rootNode,
         ],
       );

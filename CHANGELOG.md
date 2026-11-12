@@ -1,5 +1,13 @@
 # KPassLib changelog
 
+## 1.1.2+tom.3
+
+- A KDBX 3 file with a protected binary keeps its protected values: the XML
+  was built Root first and Meta second, so the protected binaries in Meta took
+  their bytes of the inner random stream after every protected field, while a
+  reader takes them in document order (Meta first). Every protected value of
+  such a file read back as garbage, in KeePass and KeePassXC too.
+
 ## 1.1.2+tom.2
 
 - A KDBX 4 binary's protected flag reads correctly: the inner header marks a
