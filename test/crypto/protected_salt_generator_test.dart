@@ -1,6 +1,6 @@
 import 'package:convert/convert.dart';
-import 'package:kpasslib/kpasslib.dart';
-import 'package:kpasslib/src/crypto/protect_salt_generator.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
+import 'package:tom_kpasslib/src/crypto/protect_salt_generator.dart';
 import 'package:test/test.dart';
 
 void main() {

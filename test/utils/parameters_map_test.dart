@@ -1,44 +1,24 @@
 import 'package:convert/convert.dart';
-import 'package:kpasslib/kpasslib.dart';
-import 'package:kpasslib/src/utils/parameters_map.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
+import 'package:tom_kpasslib/src/utils/parameters_map.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('ParametersMap unit tests', () {
-    const data =
-        '00010808000000426f6f6c5472756501000000010809000000426f6f6c46616c'
-        '73650100000000040600000055496e743332040000002a000000050600000055'
-        '496e74363408000000ffffeeeeddddcccc0c05000000496e74333204000000d6'
-        'ffffff0d05000000496e74363408000000444433332222111118060000005374'
-        '72696e670b000000537472696e6756616c756542090000004279746541727261'
-        '7907000000000102030405ff00';
-    test('reads and writes dictionary', () {
-      final params = ParametersMap.fromBytes(hex.decode(data));
-      expect(params.get('BoolTrue'), true);
-      expect(params.get('BoolFalse'), false);
-      expect(params.get('UInt32'), 42);
-      expect(params.get('UInt64'), 0xccccddddeeeeffff);
-      expect(params.get('Int32'), -42);
-      expect(params.get('Int64'), 0x1111222233334444);
-      expect(params.get('String'), 'StringValue');
-      expect(
-          hex.encode(params.get('ByteArray') as List<int>), '000102030405ff');
-      expect(hex.encode(params.bytes), data);
-    });
-
-    test('writes dictionary', () {
+    // The dictionary with full 64-bit values is parameters_map_64bit_test.dart
+    // (VM only: dart2js cannot represent them).
+    test('reads and writes 64-bit values up to 2^53', () {
       final params = ParametersMap()
         ..addAll([
-          ('BoolTrue', ParameterType.bool, true),
-          ('BoolFalse', ParameterType.bool, false),
-          ('UInt32', ParameterType.uInt32, 42),
-          ('UInt64', ParameterType.uInt64, 0xccccddddeeeeffff),
-          ('Int32', ParameterType.int32, -42),
-          ('Int64', ParameterType.int64, 0x1111222233334444),
-          ('String', ParameterType.string, 'StringValue'),
-          ('ByteArray', ParameterType.bytes, hex.decode('000102030405ff')),
+          ('UInt64', ParameterType.uInt64, 9007199254740991),
+          ('Int64', ParameterType.int64, -9007199254740991),
+          ('Memory', ParameterType.uInt64, 64 * 1024 * 1024),
         ]);
-      expect(hex.encode(params.bytes), data);
+      final again = ParametersMap.fromBytes(params.bytes);
+      expect(again.get('UInt64'), 9007199254740991);
+      expect(again.get('Int64'), -9007199254740991);
+      expect(again.get('Memory'), 64 * 1024 * 1024);
+      expect(again.bytes, params.bytes);
     });
 
     test('returns undefined for not found value', () {

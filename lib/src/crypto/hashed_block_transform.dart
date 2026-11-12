@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart';
-import 'package:kpasslib/kpasslib.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
 
 import '../utils/byte_utils.dart';
 

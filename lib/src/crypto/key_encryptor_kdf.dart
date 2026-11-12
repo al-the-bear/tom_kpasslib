@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:kpasslib/kpasslib.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
 
 import '../utils/parameters_map.dart';
-import 'argon2.dart';
 import 'key_encryptor_aes.dart';
 
 /// KDF encryption functions

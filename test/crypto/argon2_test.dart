@@ -1,25 +1,18 @@
-import 'dart:ffi';
-import 'dart:io';
-
 import 'package:convert/convert.dart';
-import 'package:kpasslib/kpasslib.dart';
-import 'package:kpasslib/src/crypto/argon2.dart';
-import 'package:kpasslib/src/crypto/dart/crypto_dart.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
+import 'package:tom_kpasslib/src/crypto/dart/crypto_dart.dart';
 import 'package:test/test.dart';
 
+import '../native_engine.dart';
 import '../test_resources.dart';
 
 void main() {
-  final libPath = _nativeLibPath();
-  final hasNative = File(libPath).existsSync();
-  CryptoFfi? cryptoFfi;
+  final cryptoFfi = loadNativeEngine();
+  final hasNative = cryptoFfi != null;
   final cryptoDart = CryptoDart();
 
   setUpAll(() async {
     await TestResources.init();
-    if (hasNative) {
-      cryptoFfi = CryptoFfi(DynamicLibrary.open(libPath));
-    }
   });
 
   group('Argon2 unit tests', () {
@@ -127,16 +120,4 @@ void _testArgon2Repeatable(CryptoEngine engine) {
   final second = argon2.convert(password);
 
   expect(second, first);
-}
-
-String _nativeLibPath() {
-  final root = Directory.current.path;
-  final name = switch (Platform.operatingSystem) {
-    'macos' || 'ios' => 'libkreepto.dylib',
-    'linux' || 'android' => 'libkreepto.so',
-    'windows' => 'kreepto.dll',
-    _ => throw UnsupportedError(
-        'Unsupported platform: ${Platform.operatingSystem}'),
-  };
-  return '$root/native/kreepto-rust/target/release/$name';
 }

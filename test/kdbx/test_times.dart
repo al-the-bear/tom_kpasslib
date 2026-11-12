@@ -1,4 +1,4 @@
-import 'package:kpasslib/src/kdbx/kdbx_time.dart';
+import 'package:tom_kpasslib/src/kdbx/kdbx_time.dart';
 
 /// Represents test times type
 class TestTimes {

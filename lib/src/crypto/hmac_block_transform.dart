@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart';
-import 'package:kpasslib/kpasslib.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
 
 import '../utils/byte_utils.dart';
 
@@ -74,6 +74,15 @@ abstract final class HmacBlockTransform {
     writer.writeBytes(key);
     return sha512.convert(writer.bytes).bytes;
   }
+
+  /// Returns the HMAC key of the header: the key of block index 2^64 - 1.
+  ///
+  /// The index is written as its bytes, all 0xFF: dart2js cannot represent
+  /// `0xffffffffffffffff` as an integer.
+  static List<int> getHeaderHmacKey({required List<int> key}) =>
+      sha512.convert([..._headerIndex, ...key]).bytes;
+
+  static const _headerIndex = [0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff];
 
   static List<int> _getBlockHmac(
     List<int> key,

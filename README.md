@@ -1,4 +1,24 @@
-# KPassLib
+# tom_kpasslib
+
+> **A fork of [kpasslib](https://github.com/korovan-software/kpasslib) 1.1.2**
+> (MIT), published as `tom_kpasslib` for the Tom Framework's KDBX storage. It
+> adds two things, both offered upstream:
+>
+> - **The web.** It compiles with dart2js and runs in the browser: the native
+>   engine is exported only where `dart:ffi` exists; Argon2 on the web is
+>   pointycastle's (the package's own Argon2 and Blake2b need 64-bit
+>   integers), the pure-Dart one stays on the VM; 64-bit header and dictionary
+>   values are read and written as two 32-bit halves; the AES-KDF runs without
+>   isolates there.
+> - **KDF parameters.** `KdbxHeader.argon2Settings` / `setArgon2` (type,
+>   memory, iterations, parallelism, version) and `aesKdfRounds` /
+>   `setAesKdf`, for a new or an existing database.
+>
+> It also accepts `xml` 7. The rest of the API is upstream's; import
+> `package:tom_kpasslib/tom_kpasslib.dart` (`package:tom_kpasslib/kpasslib.dart`
+> is the same library under upstream's name). Below, upstream's README with the
+> KDF section added.
+
 
 [![Dart](https://github.com/korovan-software/kpasslib/actions/workflows/dart.yml/badge.svg)](https://github.com/korovan-software/kpasslib/actions/workflows/dart.yml)
 [![Coverage Status](https://coveralls.io/repos/github/vladimir-skorokhodov/kpasslib/badge.svg?branch=main)](https://coveralls.io/github/vladimir-skorokhodov/kpasslib?branch=main)
@@ -86,6 +106,24 @@ final subGroup = db.createGroup(
 );
 
 final entry = db.createEntry(parent: subGroup);
+```
+
+### KDF parameters
+
+```dart
+// Argon2: type, memory in bytes, iterations, lanes, version. A value not given
+// keeps the current one; the next save derives the key with them.
+db.header.setArgon2(
+  type: Argon2Type.argon2id,
+  memory: 64 * 1024 * 1024,
+  iterations: 3,
+  parallelism: 2,
+);
+print(db.header.argon2Settings);
+
+// AES-KDF instead.
+db.header.setAesKdf(rounds: 60000);
+print(db.header.aesKdfRounds);
 ```
 
 ### Maintenance
@@ -302,7 +340,7 @@ The produced library name depends on the platform:
 ### Using the native library
 
 ```dart
-import 'package:kpasslib/kpasslib.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
 import 'dart:ffi';
 
 // Load native library
@@ -335,6 +373,14 @@ cargo build --release --target aarch64-apple-ios
 ## Running tests and generation of code coverage
 
 ### Running the tests
+
+On the VM and in Chrome (the browser suite reads the test files through a
+hybrid isolate and has its written files opened on the VM):
+
+```bash
+dart test
+CHROME_EXECUTABLE="/path/to/chrome" dart test -p chrome
+```
 
 Use VS code Testing tab or use terminal command:
 

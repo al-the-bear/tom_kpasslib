@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:xml/xml.dart';
 
-import '../../kpasslib.dart';
+import '../../tom_kpasslib.dart';
 import '../utils/xml_utils.dart';
 
 /// Autotype options for obfuscation.

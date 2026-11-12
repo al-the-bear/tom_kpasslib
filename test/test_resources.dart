@@ -1,5 +1,7 @@
-import 'dart:io';
+import 'test_assets.dart';
 
+/// The test files of `assets/test/`, read on the VM directly and in the
+/// browser through a hybrid isolate (`test_assets.dart`).
 class TestResources {
   static var demoKey = <int>[];
   static var demoKdbx = <int>[];
@@ -33,40 +35,36 @@ class TestResources {
   static var mergeKdbx = <int>[];
 
   static init() async {
-    const assets = 'assets/test';
-    demoKey = File('$assets/demo.key').readAsBytesSync();
-    demoKdbx = File('$assets/demo.kdbx').readAsBytesSync();
-    demoXml = File('$assets/demo.xml').readAsBytesSync();
-    demoIcon = File('$assets/demoIcon.png').readAsBytesSync();
-    cyrillicKdbx = File('$assets/cyrillic.kdbx').readAsBytesSync();
-    binKeyKey = File('$assets/binKey.key').readAsBytesSync();
-    binKeyKdbx = File('$assets/binKey.kdbx').readAsBytesSync();
-    emptyPass = File('$assets/emptyPass.kdbx').readAsBytesSync();
-    emptyPassWithKeyFileKey =
-        File('$assets/emptyPassWithKeyFile.key').readAsBytesSync();
-    emptyPassWithKeyFile =
-        File('$assets/emptyPassWithKeyFile.kdbx').readAsBytesSync();
-    noPassWithKeyFileKey =
-        File('$assets/noPassWithKeyFile.key').readAsBytesSync();
-    noPassWithKeyFile =
-        File('$assets/noPassWithKeyFile.kdbx').readAsBytesSync();
-    key32Key = File('$assets/key32.key').readAsBytesSync();
-    key32 = File('$assets/key32.kdbx').readAsBytesSync();
-    key64Key = File('$assets/key64.key').readAsBytesSync();
-    key64 = File('$assets/key64.kdbx').readAsBytesSync();
-    keyWithBomKey = File('$assets/keyWithBom.key').readAsBytesSync();
-    keyWithBom = File('$assets/keyWithBom.kdbx').readAsBytesSync();
-    keyV2Key = File('$assets/keyV2.keyx').readAsBytesSync();
-    keyV2 = File('$assets/keyV2.kdbx').readAsBytesSync();
-    argon2 = File('$assets/argon2.kdbx').readAsBytesSync();
-    argon2id = File('$assets/argon2id.kdbx').readAsBytesSync();
-    aesChaCha = File('$assets/aesChaCha.kdbx').readAsBytesSync();
-    aesKdfKdbx4 = File('$assets/aesKdfKdbx4.kdbx').readAsBytesSync();
-    argon2ChaCha = File('$assets/argon2ChaCha.kdbx').readAsBytesSync();
-    yubikey3 = File('$assets/yubikey3.kdbx').readAsBytesSync();
-    yubikey4 = File('$assets/yubikey4.kdbx').readAsBytesSync();
-    emptyUuidXml = File('$assets/emptyUuid.xml').readAsBytesSync();
-    kdbx41 = File('$assets/kdbx4.1.kdbx').readAsBytesSync();
-    mergeKdbx = File('$assets/merge.kdbx').readAsBytesSync();
+    final assets = await loadTestAssets();
+    demoKey = assets['demo.key']!;
+    demoKdbx = assets['demo.kdbx']!;
+    demoXml = assets['demo.xml']!;
+    demoIcon = assets['demoIcon.png']!;
+    cyrillicKdbx = assets['cyrillic.kdbx']!;
+    binKeyKey = assets['binKey.key']!;
+    binKeyKdbx = assets['binKey.kdbx']!;
+    emptyPass = assets['emptyPass.kdbx']!;
+    emptyPassWithKeyFileKey = assets['emptyPassWithKeyFile.key']!;
+    emptyPassWithKeyFile = assets['emptyPassWithKeyFile.kdbx']!;
+    noPassWithKeyFileKey = assets['noPassWithKeyFile.key']!;
+    noPassWithKeyFile = assets['noPassWithKeyFile.kdbx']!;
+    key32Key = assets['key32.key']!;
+    key32 = assets['key32.kdbx']!;
+    key64Key = assets['key64.key']!;
+    key64 = assets['key64.kdbx']!;
+    keyWithBomKey = assets['keyWithBom.key']!;
+    keyWithBom = assets['keyWithBom.kdbx']!;
+    keyV2Key = assets['keyV2.keyx']!;
+    keyV2 = assets['keyV2.kdbx']!;
+    argon2 = assets['argon2.kdbx']!;
+    argon2id = assets['argon2id.kdbx']!;
+    aesChaCha = assets['aesChaCha.kdbx']!;
+    aesKdfKdbx4 = assets['aesKdfKdbx4.kdbx']!;
+    argon2ChaCha = assets['argon2ChaCha.kdbx']!;
+    yubikey3 = assets['yubikey3.kdbx']!;
+    yubikey4 = assets['yubikey4.kdbx']!;
+    emptyUuidXml = assets['emptyUuid.xml']!;
+    kdbx41 = assets['kdbx4.1.kdbx']!;
+    mergeKdbx = assets['merge.kdbx']!;
   }
 }

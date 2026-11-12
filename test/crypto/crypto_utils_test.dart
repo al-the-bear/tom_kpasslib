@@ -1,5 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:kpasslib/src/crypto/crypto_utils.dart';
+import 'package:tom_kpasslib/src/crypto/crypto_utils.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -1,4 +1,4 @@
-import 'package:kpasslib/kpasslib.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
 
 import 'test_entry.dart';
 import 'test_times.dart';

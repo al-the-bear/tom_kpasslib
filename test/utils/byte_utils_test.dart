@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:kpasslib/src/utils/byte_utils.dart';
+import 'package:tom_kpasslib/src/utils/byte_utils.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -8,7 +8,8 @@ void main() {
     final arr = List.generate(100, (i) => i);
     final data = Uint8List.fromList(arr).buffer.asByteData();
 
-    test('provides basic int getters', () {
+    // Reads and writes all 64 bits of a value: only the VM represents them.
+    test('provides basic int getters', testOn: 'vm', () {
       final reader = BytesReader(arr);
       expect(reader.readUint8(), data.getUint8(0));
       expect(reader.readUint8(), data.getUint8(1));
@@ -34,7 +35,7 @@ void main() {
       expect(reader.readUint8(), 8);
     });
 
-    test('provides basic int setters', () {
+    test('provides basic int setters', testOn: 'vm', () {
       final writer = BytesWriter();
       writer.writeUint8(data.getUint8(0));
       writer.writeUint8(data.getUint8(1));

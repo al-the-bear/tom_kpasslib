@@ -1,6 +1,6 @@
 import 'package:xml/xml.dart';
 
-import '../../kpasslib.dart';
+import '../../tom_kpasslib.dart';
 import '../utils/merge_utils.dart';
 import '../utils/xml_utils.dart';
 

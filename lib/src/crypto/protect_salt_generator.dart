@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:kpasslib/kpasslib.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
 
 import 'stream_cipher.dart';
 

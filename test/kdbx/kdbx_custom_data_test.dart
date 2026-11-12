@@ -1,5 +1,5 @@
-import 'package:kpasslib/src/kdbx/kdbx_custom_data.dart';
-import 'package:kpasslib/src/utils/xml_utils.dart';
+import 'package:tom_kpasslib/src/kdbx/kdbx_custom_data.dart';
+import 'package:tom_kpasslib/src/utils/xml_utils.dart';
 import 'package:test/test.dart';
 import 'package:xml/xml.dart';
 

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:kpasslib/kpasslib.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
 import 'package:xml/xml.dart';
 
 import '../utils/byte_utils.dart';

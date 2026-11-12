@@ -1,5 +1,5 @@
-import 'package:kpasslib/kpasslib.dart';
-import 'package:kpasslib/src/utils/xml_utils.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
+import 'package:tom_kpasslib/src/utils/xml_utils.dart';
 import 'package:test/test.dart';
 import 'package:xml/xml.dart';
 

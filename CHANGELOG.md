@@ -1,5 +1,25 @@
 # KPassLib changelog
 
+## 1.1.2+tom.1
+
+Fork of kpasslib 1.1.2 (al-the-bear/tom_kpasslib, branch `tom/1.1.2-patches`),
+published on pub.dev as `tom_kpasslib`; its library is
+`package:tom_kpasslib/tom_kpasslib.dart`:
+
+- Runs on the web (dart2js): `CryptoFfi` is exported from `dart:ffi` platforms
+  only (a stub that cannot be constructed elsewhere); the default engine's
+  Argon2 is pointycastle's on the web and the pure-Dart one on the VM; 64-bit
+  values are read and written as two 32-bit halves (exact up to 2^53 on the
+  web); the header HMAC key's block index is written as bytes; the AES-KDF
+  runs in the event loop where there are no isolates.
+- KDF parameters: `KdbxHeader.argon2Settings` and `setArgon2` (type, memory,
+  iterations, parallelism, version), `aesKdfRounds` and `setAesKdf`, with
+  `KdbxArgon2Settings`; `Argon2Type` and `Argon2Version` are exported.
+- Accepts `xml` 7 as well as 6.
+- The test suite runs in the browser too (`dart test -p chrome`), with interop
+  fixtures written by `tom_kdbx` and on the VM, and files written in the
+  browser opened on the VM.
+
 ## 1.1.2
 
 - Exported `CryptoFfi` from main library import.

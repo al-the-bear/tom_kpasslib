@@ -30,7 +30,7 @@ class Salsa20Dart extends Salsa20 {
     state[6] = StreamCipher.loadLE(nonce, 0);
     state[7] = StreamCipher.loadLE(nonce, 4);
     state[8] = counter & StreamCipher.mask;
-    state[9] = (counter >> 32) & StreamCipher.mask;
+    state[9] = (counter ~/ 0x100000000) & StreamCipher.mask;
     state[10] = 0x79622d32; // "2-by"
     state[11] = StreamCipher.loadLE(_key, 16);
     state[12] = StreamCipher.loadLE(_key, 20);

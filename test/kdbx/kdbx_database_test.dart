@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:convert/convert.dart';
-import 'package:kpasslib/kpasslib.dart';
-import 'package:kpasslib/src/kdbx/kdbx_autotype.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
+import 'package:tom_kpasslib/src/kdbx/kdbx_autotype.dart';
 import 'package:test/test.dart';
 
 import '../test_resources.dart';

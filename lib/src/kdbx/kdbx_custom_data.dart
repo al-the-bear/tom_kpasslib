@@ -1,4 +1,4 @@
-import 'package:kpasslib/kpasslib.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
 import 'package:xml/xml.dart';
 
 import '../utils/xml_utils.dart';
@@ -76,7 +76,7 @@ class KdbxCustomData {
     }
 
     return XmlElement(
-      XmlName(XmlElem.customData),
+      xmlName(XmlElem.customData),
       [],
       map.entries.map(
         (e) => XmlUtils.createElement(

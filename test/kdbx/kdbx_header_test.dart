@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
-import 'package:kpasslib/kpasslib.dart';
-import 'package:kpasslib/src/utils/byte_utils.dart';
-import 'package:kpasslib/src/utils/parameters_map.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
+import 'package:tom_kpasslib/src/utils/byte_utils.dart';
+import 'package:tom_kpasslib/src/utils/parameters_map.dart';
 import 'package:test/test.dart';
 
 void main() {

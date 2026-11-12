@@ -1,5 +1,5 @@
-import 'package:kpasslib/kpasslib.dart';
-import 'package:kpasslib/src/crypto/hashed_block_transform.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
+import 'package:tom_kpasslib/src/crypto/hashed_block_transform.dart';
 import 'package:test/test.dart';
 
 void main() {

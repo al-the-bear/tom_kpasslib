@@ -1,24 +1,16 @@
-import 'dart:ffi';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:convert/convert.dart';
-import 'package:kpasslib/src/crypto/dart/crypto_dart.dart';
-import 'package:kpasslib/src/crypto/ffi/crypto_ffi.dart';
+import 'package:tom_kpasslib/src/crypto/dart/crypto_dart.dart';
 import 'package:test/test.dart';
 
-void main() {
-  final libPath = _nativeLibPath();
-  final hasNative = File(libPath).existsSync();
-  CryptoFfi? cryptoFfi;
-  CryptoDart cryptoDart = CryptoDart();
+import '../native_engine.dart';
 
-  setUpAll(() async {
-    if (hasNative) {
-      cryptoFfi = CryptoFfi(DynamicLibrary.open(libPath));
-    }
-  });
+void main() {
+  final cryptoFfi = loadNativeEngine();
+  final hasNative = cryptoFfi != null;
+  CryptoDart cryptoDart = CryptoDart();
 
   group('Salsa20 unit tests', () {
     test('RFC 4137 test vector (counter=0)', () {
@@ -91,16 +83,4 @@ _testPartialLastBlock(dynamic engine) {
 
   final decrypted = salsa.transform(data: encrypted, nonce: nonce);
   expect(decrypted, data);
-}
-
-String _nativeLibPath() {
-  final root = Directory.current.path;
-  final name = switch (Platform.operatingSystem) {
-    'macos' => 'libkreepto.dylib',
-    'linux' => 'libkreepto.so',
-    'windows' => 'kreepto.dll',
-    _ => throw UnsupportedError(
-        'Unsupported platform: ${Platform.operatingSystem}'),
-  };
-  return '$root/native/kreepto-rust/target/release/$name';
 }

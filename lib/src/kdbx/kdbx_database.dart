@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 import 'package:collection/collection.dart';
-import 'package:kpasslib/kpasslib.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
 import 'package:xml/xml.dart';
 
 import '../crypto/crypto_utils.dart';
@@ -577,7 +577,7 @@ class KdbxDatabase {
 
   XmlDocument _buildXml({required bool exportXml, required bool binaryTime}) {
     final deletedObjectsNode = XmlElement(
-      XmlName(XmlElem.deletedObjects),
+      xmlName(XmlElem.deletedObjects),
       [],
       deletedObjects.entries.map(
         (e) => XmlUtils.createElement(
@@ -591,7 +591,7 @@ class KdbxDatabase {
     );
 
     final rootNode = XmlElement(
-      XmlName(XmlElem.root),
+      xmlName(XmlElem.root),
       [],
       [
         ...groups.map((e) => e.toXml(

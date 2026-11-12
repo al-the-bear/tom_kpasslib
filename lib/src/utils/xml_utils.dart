@@ -1,8 +1,16 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
-import 'package:kpasslib/kpasslib.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
 import 'package:xml/xml.dart';
+
+/// An unprefixed [XmlName].
+///
+/// The package accepts xml 6 and 7, which share no constructor for it that
+/// neither deprecates: xml 7 deprecates `XmlName(...)` in favour of
+/// `XmlName.parts`, which xml 6 lacks.
+// ignore: deprecated_member_use
+XmlName xmlName(String name) => XmlName(name);
 
 /// An utility functions to work with XML.
 abstract final class XmlUtils {
@@ -76,7 +84,7 @@ abstract final class XmlUtils {
       final text = e.$2;
       return text == null
           ? null
-          : (XmlElement(XmlName(e.$1))..innerText = text);
+          : (XmlElement(xmlName(e.$1))..innerText = text);
     }).nonNulls);
   }
 
@@ -86,7 +94,7 @@ abstract final class XmlUtils {
     List<(String, Object?)>? children,
     bool binaryTime = false,
   }) {
-    final node = XmlElement(XmlName(name));
+    final node = XmlElement(xmlName(name));
 
     if (children != null) {
       addChildren(

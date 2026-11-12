@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
-import 'package:kpasslib/src/crypto/dart/aes256_dart.dart';
-import 'package:kpasslib/src/crypto/key_encryptor_aes.dart';
+import 'package:tom_kpasslib/src/crypto/dart/aes256_dart.dart';
+import 'package:tom_kpasslib/src/crypto/key_encryptor_aes.dart';
 import 'package:test/test.dart';
 
 void main() {

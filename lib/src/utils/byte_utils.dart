@@ -1,5 +1,8 @@
 import 'dart:typed_data';
 
+/// 2^32, for 64-bit values handled as two 32-bit halves.
+const _twoPow32 = 0x100000000;
+
 /// A reader of bytes sequence.
 class BytesReader {
   final ByteData _data;
@@ -10,17 +13,25 @@ class BytesReader {
       : _data = Uint8List.fromList(bytes).buffer.asByteData();
 
   /// Reads an unsigned 64-bit integer.
+  ///
+  /// Read as two 32-bit halves, since dart2js has no 64-bit accessors: exact
+  /// on the VM, and on the web for values up to 2^53.
   int readUint64() {
-    final result = _data.getUint64(_offset, Endian.little);
-    _offset += Uint64List.bytesPerElement;
-    return result;
+    final low = _data.getUint32(_offset, Endian.little);
+    final high = _data.getUint32(_offset + 4, Endian.little);
+    _offset += 8;
+    return high * _twoPow32 + low;
   }
 
   /// Reads an signed 64-bit integer.
+  ///
+  /// Read as two 32-bit halves, like [readUint64]: exact on the VM, and on the
+  /// web for values between -2^53 and 2^53.
   int readInt64() {
-    final result = _data.getInt64(_offset, Endian.little);
-    _offset += Int64List.bytesPerElement;
-    return result;
+    final low = _data.getUint32(_offset, Endian.little);
+    final high = _data.getInt32(_offset + 4, Endian.little);
+    _offset += 8;
+    return high * _twoPow32 + low;
   }
 
   /// Reads an unsigned 32-bit integer.
@@ -81,16 +92,20 @@ class BytesWriter {
   final _builder = BytesBuilder();
 
   /// Writes unsigned 64-bit integer.
-  writeUint64(int value) {
-    final data = ByteData(Uint64List.bytesPerElement)
-      ..setUint64(0, value, Endian.little);
-    _builder.add(data.buffer.asUint8List());
-  }
+  ///
+  /// Written as two 32-bit halves, since dart2js has no 64-bit accessors:
+  /// exact on the VM, and on the web for values up to 2^53.
+  writeUint64(int value) => _write64(value);
 
-  /// Writes signed 64-bit integer.
-  writeInt64(int value) {
-    final data = ByteData(Int64List.bytesPerElement)
-      ..setInt64(0, value, Endian.little);
+  /// Writes signed 64-bit integer, in two's complement like [writeUint64].
+  writeInt64(int value) => _write64(value);
+
+  void _write64(int value) {
+    final low = value % _twoPow32;
+    final high = ((value - low) ~/ _twoPow32) % _twoPow32;
+    final data = ByteData(8)
+      ..setUint32(0, low, Endian.little)
+      ..setUint32(4, high, Endian.little);
     _builder.add(data.buffer.asUint8List());
   }
 

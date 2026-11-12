@@ -1,26 +1,21 @@
-import 'dart:ffi';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:convert/convert.dart';
-import 'package:kpasslib/kpasslib.dart';
-import 'package:kpasslib/src/crypto/crypto_utils.dart';
-import 'package:kpasslib/src/crypto/dart/crypto_dart.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
+import 'package:tom_kpasslib/src/crypto/crypto_utils.dart';
+import 'package:tom_kpasslib/src/crypto/dart/crypto_dart.dart';
 import 'package:test/test.dart';
 
+import '../native_engine.dart';
 import '../test_resources.dart';
 
 void main() {
-  final libPath = _nativeLibPath();
-  final hasNative = File(libPath).existsSync();
-  CryptoFfi? cryptoFfi;
+  final cryptoFfi = loadNativeEngine();
+  final hasNative = cryptoFfi != null;
   CryptoDart cryptoDart = CryptoDart();
 
   setUpAll(() async {
-    if (hasNative) {
-      cryptoFfi = CryptoFfi(DynamicLibrary.open(libPath));
-    }
     await TestResources.init();
   });
 
@@ -114,16 +109,4 @@ _testKdbxLoading(CryptoEngine engine) async {
     credentials: credentials,
   );
   expect(db.groups.isNotEmpty, isTrue);
-}
-
-String _nativeLibPath() {
-  final root = Directory.current.path;
-  final name = switch (Platform.operatingSystem) {
-    'macos' => 'libkreepto.dylib',
-    'linux' => 'libkreepto.so',
-    'windows' => 'kreepto.dll',
-    _ => throw UnsupportedError(
-        'Unsupported platform: ${Platform.operatingSystem}'),
-  };
-  return '$root/native/kreepto-rust/target/release/$name';
 }

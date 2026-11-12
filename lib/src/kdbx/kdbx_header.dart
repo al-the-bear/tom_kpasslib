@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart';
-import 'package:kpasslib/kpasslib.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
 
 import '../crypto/crypto_utils.dart';
 import '../crypto/hmac_block_transform.dart';
@@ -106,6 +106,7 @@ class KdbxHeader {
   static const _defaultKdfMemory = 0x100000;
   static const _defaultKdfVersion = 0x13;
   static const _defaultKdfSaltLength = 32;
+  static const _maxKdfParallelism = 0xFFFFFF;
   static const _endOfInnerHeader = <int>[];
   static const _endOfOuterHeader = <int>[0x0D, 0x0A, 0x0D, 0x0A];
 
@@ -258,6 +259,125 @@ class KdbxHeader {
 
   set kdf(String kdf) => kdfParameters = _createKdfParameters(algo: kdf);
 
+  /// The Argon2 settings of a KDBX 4 file, or `null` when it is KDBX 3 or its
+  /// KDF is AES-KDF.
+  KdbxArgon2Settings? get argon2Settings {
+    final parameters = kdfParameters;
+    if (version.$1 < 4 || parameters == null) {
+      return null;
+    }
+    final type = switch (_kdfId(parameters)) {
+      KdfId.argon2d => Argon2Type.argon2d,
+      KdfId.argon2id => Argon2Type.argon2id,
+      _ => null,
+    };
+    if (type == null) {
+      return null;
+    }
+    final v = parameters.get('V');
+    return KdbxArgon2Settings(
+      type: type,
+      version: Argon2Version.values.firstWhere(
+        (version) => version.value == v,
+        orElse: () => throw UnsupportedValueError('argon2 version'),
+      ),
+      memory: parameters.get('M') as int,
+      iterations: parameters.get('I') as int,
+      parallelism: parameters.get('P') as int,
+    );
+  }
+
+  /// Sets the KDF of a KDBX 4 file to Argon2: [type], [memory] in bytes (a
+  /// multiple of 1024, at least 8 KiB per lane), [iterations] (at least 1),
+  /// [parallelism] (1 to 2^24 - 1 lanes) and [version].
+  ///
+  /// A value not given keeps the file's current Argon2 setting, or the default
+  /// of a new file (Argon2d, 1 MiB, 2 iterations, 1 lane, version 1.3) when
+  /// the file does not use Argon2 yet. The new settings derive the key from
+  /// the next save on; every save also draws a new salt.
+  ///
+  /// Throws [InvalidStateError] for a KDBX 3 file, which has no KDF
+  /// parameters (set [version] to 4.x first), and [UnsupportedValueError] for
+  /// a value outside the ranges above.
+  void setArgon2({
+    Argon2Type? type,
+    int? memory,
+    int? iterations,
+    int? parallelism,
+    Argon2Version? version,
+  }) {
+    if (this.version.$1 < 4) {
+      throw InvalidStateError('KDBX 3 has no KDF parameters');
+    }
+    final current = argon2Settings;
+    final newType = type ?? current?.type ?? Argon2Type.argon2d;
+    final newMemory = memory ?? current?.memory ?? _defaultKdfMemory;
+    final newIterations =
+        iterations ?? current?.iterations ?? _defaultKdfIterations;
+    final newParallelism =
+        parallelism ?? current?.parallelism ?? _defaultKdfParallelism;
+    final newVersion = version ??
+        current?.version ??
+        Argon2Version.values.firstWhere((v) => v.value == _defaultKdfVersion);
+
+    if (newParallelism < 1 || newParallelism > _maxKdfParallelism) {
+      throw UnsupportedValueError('argon2 parallelism');
+    }
+    if (newIterations < 1) {
+      throw UnsupportedValueError('argon2 iterations');
+    }
+    if (newMemory % DataSize.kibi != 0 ||
+        newMemory < 8 * DataSize.kibi * newParallelism) {
+      throw UnsupportedValueError('argon2 memory');
+    }
+
+    final parameters = _createKdfParameters(
+      algo: newType == Argon2Type.argon2d ? KdfId.argon2d : KdfId.argon2id,
+    );
+    parameters.addAll([
+      ('P', ParameterType.uInt32, newParallelism),
+      ('I', ParameterType.uInt64, newIterations),
+      ('M', ParameterType.uInt64, newMemory),
+      ('V', ParameterType.uInt32, newVersion.value),
+    ]);
+    kdfParameters = parameters;
+  }
+
+  /// The AES-KDF rounds of a KDBX 4 file, or `null` when it is KDBX 3 (see
+  /// [keyEncryptionRounds]) or its KDF is Argon2.
+  int? get aesKdfRounds {
+    final parameters = kdfParameters;
+    if (version.$1 < 4 ||
+        parameters == null ||
+        _kdfId(parameters) != KdfId.aes) {
+      return null;
+    }
+    return parameters.get('R') as int;
+  }
+
+  /// Sets the KDF of a KDBX 4 file to AES-KDF with [rounds] (at least 1); not
+  /// given, the file's current rounds or the default of a new file.
+  ///
+  /// Throws [InvalidStateError] for a KDBX 3 file (it sets
+  /// [keyEncryptionRounds] instead) and [UnsupportedValueError] for fewer
+  /// than one round.
+  void setAesKdf({int? rounds}) {
+    if (version.$1 < 4) {
+      throw InvalidStateError('KDBX 3 has no KDF parameters');
+    }
+    final newRounds = rounds ?? aesKdfRounds ?? Defaults.keyEncryptionRounds;
+    if (newRounds < 1) {
+      throw UnsupportedValueError('aes kdf rounds');
+    }
+    kdfParameters = _createKdfParameters(algo: KdfId.aes)
+      ..add(key: 'R', type: ParameterType.uInt64, value: newRounds);
+  }
+
+  static String? _kdfId(ParametersMap parameters) {
+    final uuid = parameters.get(r'$UUID');
+    return uuid is List<int> ? base64.encode(uuid) : null;
+  }
+
   /// The master key for KDBX version 3.x.
   Future<List<int>> get masterKeyV3 async {
     final transformSeed = this.transformSeed;
@@ -324,10 +444,7 @@ class KdbxHeader {
     final hmacKey = sha512.convert(keyWithSeed + [1]).bytes;
     CryptoUtils.wipeData(keyWithSeed);
 
-    final keySha = HmacBlockTransform.getHmacKey(
-      key: hmacKey,
-      index: 0xffffffffffffffff,
-    );
+    final keySha = HmacBlockTransform.getHeaderHmacKey(key: hmacKey);
     final hmac = Hmac(sha256, keySha).convert(source ?? bytes).bytes;
 
     return (cipherKey, hmacKey, hmac);

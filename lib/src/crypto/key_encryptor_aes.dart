@@ -1,14 +1,15 @@
 import 'dart:async';
-import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart';
 
 import 'aes.dart';
+import '../utils/background.dart';
 import 'crypto_utils.dart';
 
-/// AES-256 key transform using parallel isolates.
+/// AES-256 key transform using parallel isolates (one after the other on the
+/// web, which has none).
 abstract final class KeyEncryptorAes {
   /// Encrypts [data] (32 bytes) with [aes] for [rounds], returns SHA-256 hash.
   static Future<List<int>> transform({
@@ -23,7 +24,7 @@ abstract final class KeyEncryptorAes {
     }
 
     Future<Uint8List> runBlock({required Uint8List block}) {
-      return Isolate.run(() {
+      return runInBackground(() {
         aes.transformBlock(data: block, rounds: rounds);
         return block;
       });

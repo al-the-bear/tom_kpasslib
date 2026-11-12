@@ -1,4 +1,4 @@
-import 'package:kpasslib/kpasslib.dart';
+import 'package:tom_kpasslib/tom_kpasslib.dart';
 
 // TODO: improve the example
 
