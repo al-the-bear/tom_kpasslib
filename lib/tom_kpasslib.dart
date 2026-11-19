@@ -8,6 +8,7 @@ export 'src/crypto/ffi/crypto_ffi_stub.dart'
     if (dart.library.ffi) 'src/crypto/ffi/crypto_ffi.dart';
 export 'src/crypto/protected_value.dart';
 export 'src/kdbx/constants.dart';
+export 'src/kdbx/kdbx_autotype.dart';
 export 'src/kdbx/kdbx_binaries.dart';
 export 'src/kdbx/kdbx_credentials.dart';
 export 'src/kdbx/kdbx_custom_data.dart';

@@ -1,5 +1,11 @@
 # KPassLib changelog
 
+## 1.1.2+tom.4
+
+- The auto-type types are exported (`KdbxAutoType`, `KdbxAutoTypeItem`,
+  `AutoTypeObfuscationOptions`): an entry's `autoType` was readable, but a
+  window association could not be made outside the library.
+
 ## 1.1.2+tom.3
 
 - A KDBX 3 file with a protected binary keeps its protected values: the XML
