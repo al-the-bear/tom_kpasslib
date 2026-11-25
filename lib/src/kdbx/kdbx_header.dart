@@ -465,7 +465,12 @@ class KdbxHeader {
     for (final item in binaries.all) {
       final binary = item;
       final isProtected = binary is ProtectedBinary;
-      final binaryData = [(isProtected ? 1 : 0)] + binary.data;
+      // A typed buffer, copied once: a list concatenation of a large
+      // attachment costs seconds.
+      final data = binary.data;
+      final binaryData = Uint8List(data.length + 1)
+        ..[0] = isProtected ? 1 : 0
+        ..setRange(1, data.length + 1, data);
       _writeField(writer, _InnerField.binary, binaryData);
       CryptoUtils.wipeData(binaryData);
     }

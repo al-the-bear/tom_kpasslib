@@ -1,5 +1,16 @@
 # KPassLib changelog
 
+## 1.1.2+tom.5
+
+- Saving a file with large attachments is several times faster (40 MB:
+  about 12 s to 2 s on the VM). `CryptoUtils.wipeData` overwrites with
+  zeros instead of drawing each byte from `Random.secure`, which took about
+  4 s per 40 MB, and a save wiped three such buffers. The inner header's
+  binaries, the inner header with the XML, and the header with the body are
+  joined into typed buffers instead of list concatenations, so gzip gets a
+  `Uint8List`. The HMAC of a block is computed over its parts without
+  copying the block first.
+
 ## 1.1.2+tom.4
 
 - The auto-type types are exported (`KdbxAutoType`, `KdbxAutoTypeItem`,

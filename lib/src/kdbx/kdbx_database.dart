@@ -156,12 +156,19 @@ class KdbxDatabase {
     header.generateSalts();
     final version = header.version.$1;
 
-    return header.bytes +
-        await switch (version) {
-          3 => _v3Bytes,
-          4 => _v4Bytes,
-          _ => throw UnsupportedValueError('bad version: $version')
-        };
+    // The header first: KDBX 3 writes its hash into the body.
+    final head = header.bytes;
+    final body = await switch (version) {
+      3 => _v3Bytes,
+      4 => _v4Bytes,
+      _ => throw UnsupportedValueError('bad version: $version')
+    };
+    // Joined into one typed buffer: a list concatenation of a large file
+    // costs seconds.
+    return (BytesBuilder(copy: false)
+          ..add(head)
+          ..add(body))
+        .takeBytes();
   }
 
   /// Saves the database as XML string.
@@ -552,17 +559,24 @@ class KdbxDatabase {
 
     final innerHeaderData = header.innerBytes;
     final xmlData = utf8.encode(xml.toXmlString());
-    var data = innerHeaderData + xmlData;
+    // One typed buffer: a list concatenation (and a gzip over a plain list)
+    // of a vault with large attachments costs seconds.
+    final joined = Uint8List(innerHeaderData.length + xmlData.length)
+      ..setRange(0, innerHeaderData.length, innerHeaderData)
+      ..setRange(innerHeaderData.length,
+          innerHeaderData.length + xmlData.length, xmlData);
     CryptoUtils.wipeData(xmlData);
     CryptoUtils.wipeData(innerHeaderData);
 
+    List<int> data = joined;
     if (header.compression == CompressionAlgorithm.gzip) {
-      data = GZipEncoder().encodeBytes(data);
+      data = GZipEncoder().encodeBytes(joined);
+      CryptoUtils.wipeData(joined);
     }
 
     data = await _transformData(
       header: header,
-      data: Uint8List.fromList(data),
+      data: data is Uint8List ? data : Uint8List.fromList(data),
       cipherKey: Uint8List.fromList(cipherKey),
       encrypt: true,
     );

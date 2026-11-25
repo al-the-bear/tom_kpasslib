@@ -89,12 +89,27 @@ abstract final class HmacBlockTransform {
     int index,
     List<int> data,
   ) {
-    final writer = BytesWriter();
-    writer.writeUint64(index);
-    writer.writeUint32(data.length);
-    writer.writeBytes(data);
-
+    final prefix = BytesWriter()
+      ..writeUint64(index)
+      ..writeUint32(data.length);
     final blockKey = getHmacKey(key: key, index: index);
-    return Hmac(sha256, blockKey).convert(writer.bytes).bytes;
+    // Fed in parts: the block (up to 1 MiB) is not copied first.
+    final digest = _DigestSink();
+    Hmac(sha256, blockKey).startChunkedConversion(digest)
+      ..add(prefix.bytes)
+      ..add(data)
+      ..close();
+    return digest.value.bytes;
   }
+}
+
+/// Takes the one digest a chunked HMAC conversion produces.
+final class _DigestSink implements Sink<Digest> {
+  late Digest value;
+
+  @override
+  void add(Digest data) => value = data;
+
+  @override
+  void close() {}
 }

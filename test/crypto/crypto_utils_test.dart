@@ -9,6 +9,7 @@ void main() {
       final backup = List.from(buffer);
       CryptoUtils.wipeData(buffer);
       expect(ListEquality().equals(buffer, backup), false);
+      expect(buffer, everyElement(0), reason: 'overwritten with zeros');
     });
 
     test('Checks bytes randomizer', () {
